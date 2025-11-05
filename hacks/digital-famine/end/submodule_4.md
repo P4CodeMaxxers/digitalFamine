@@ -130,6 +130,68 @@ microblog: true
       box-shadow: 0 0 10px rgba(56,189,248,0.3);
       padding: 0.5rem;
     }
+
+    /* ---- Vault Transition Overlay ---- */
+    .vault-transition {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .vault-panel {
+      width: 90%;
+      max-width: 600px;
+      background: linear-gradient(135deg, #1a1f3a 0%, #0f1629 100%);
+      border: 2px solid #7dd3fc;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      color: #e0e6ed;
+      box-shadow: 0 0 40px rgba(125, 211, 252, 0.5);
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 40px rgba(125, 211, 252, 0.5); }
+      50% { box-shadow: 0 0 60px rgba(125, 211, 252, 1); }
+    }
+
+    .vault-header h2 {
+      font-size: 24px;
+      color: #7dd3fc;
+      margin-bottom: 20px;
+    }
+
+    .vault-body p {
+      margin-bottom: 25px;
+      font-size: 18px;
+      color: #cbd5e1;
+    }
+
+    .vault-loader {
+      width: 80px;
+      height: 80px;
+      border: 6px solid rgba(125, 211, 252, 0.2);
+      border-top-color: #7dd3fc;
+      border-radius: 50%;
+      margin: 0 auto;
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
@@ -141,7 +203,7 @@ microblog: true
     </h2>
     <p class="text-cyber-text text-lg mb-4">
       The alien network is collapsing, and the final breach threatens to erase Earth’s digital archives.  
-      Your task is to **reactivate the Cyber Defense Vault** by proving mastery of all previous modules.  
+      Your task is to <strong>reactivate the Cyber Defense Vault</strong> by proving mastery of all previous modules.  
       Every correct response powers one core of the vault; once all are charged, you’ll synthesize the 4-digit vault PIN.
     </p>
     <ul class="list-disc list-inside text-cyber-green text-base">
@@ -198,26 +260,28 @@ microblog: true
   </div>
 </main>
 
+<!-- Vault Initialization Overlay -->
+<div class="vault-transition" id="vaultTransition">
+  <div class="vault-panel">
+    <div class="vault-header">
+      <h2>🔒 Vault Systems Initializing...</h2>
+    </div>
+    <div class="vault-body">
+      <p>Synchronizing encrypted archives...</p>
+      <div class="vault-loader"></div>
+    </div>
+  </div>
+</div>
+
 <script>
   const questions = [
-    {
-      q: "What is the core principle of cybersecurity?",
-      options: ["Availability", "Integrity", "Confidentiality", "All of the above"],
-      answer: 3
-    },
-    {
-      q: "What does hashing ensure in data security?",
-      options: ["Data recovery", "Data transformation", "Data integrity", "Data encryption"],
-      answer: 2
-    },
-    {
-      q: "What layer does encryption primarily occur in the OSI model?",
-      options: ["Application", "Presentation", "Network", "Session"],
-      answer: 1
-    }
+    { q: "What is the core principle of cybersecurity?", options: ["Availability", "Integrity", "Confidentiality", "All of the above"], answer: 3 },
+    { q: "What does hashing ensure in data security?", options: ["Data recovery", "Data transformation", "Data integrity", "Data encryption"], answer: 2 },
+    { q: "What layer does encryption primarily occur in the OSI model?", options: ["Application", "Presentation", "Network", "Session"], answer: 1 }
   ];
 
   const quizDiv = document.getElementById('quiz-questions');
+  const selections = {};
 
   questions.forEach((item, i) => {
     const qEl = document.createElement('div');
@@ -232,8 +296,6 @@ microblog: true
     quizDiv.appendChild(qEl);
   });
 
-  const selections = {};
-
   function selectOption(qIdx, optIdx, element) {
     const siblings = element.parentNode.querySelectorAll('.cyber-option');
     siblings.forEach(btn => btn.classList.remove('selected'));
@@ -247,7 +309,7 @@ microblog: true
     renderHashMatch();
   }
 
-  // --- Countdown Lock ---
+  // Countdown Lock
   const countdownNumber = '7424';
   function checkCountdownLock() {
     const userInput = document.getElementById('countdown-input').value;
@@ -261,7 +323,7 @@ microblog: true
     }
   }
 
-  // --- Hash Match ---
+  // Hash Match
   const hashPairs = [
     { code: 'ALPHA-7X9K', hash: 'f1a3c4b9' },
     { code: 'BRAVO-4M8Q', hash: '9b2d1e7f' },
@@ -292,7 +354,30 @@ microblog: true
     statusEl.className = 'mt-2 text-cyber-green';
   }
 
+  // Vault Transition
   function startFinalSequence() {
-    alert('Vault systems initializing... 🛰️');
+    const overlay = document.getElementById('vaultTransition');
+    overlay.style.display = 'flex';
+
+    const text = overlay.querySelector('.vault-body p');
+    const messages = [
+      "Decrypting mission archives...",
+      "Rebooting vault systems...",
+      "Synchronizing encrypted data...",
+      "Restoring lost protocols...",
+      "Preparing Submodule 5..."
+    ];
+
+    let i = 0;
+    const interval = setInterval(() => {
+      text.textContent = messages[i];
+      i++;
+      if (i >= messages.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          window.location.href = "{{ site.baseurl }}/digital-famine/end/submodule_5/";
+        }, 1000);
+      }
+    }, 1500);
   }
 </script>
